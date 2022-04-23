@@ -1,3 +1,5 @@
+const ClientError = require('../../exceptions/ClientError');
+
 class CollaborationHandler {
   constructor(collaborationService, playlistService, usersService, validator) {
     this._collaborationService = collaborationService;
@@ -11,40 +13,92 @@ class CollaborationHandler {
   }
 
   async postCollaborationHandler(request, h) {
-    this._validator.validateCollaborationPayload(request.payload);
-    const { id: credentialId } = request.auth.credentials;
-    const { playlistId, userId } = request.payload;
+      try {
+        this._validator.validateCollaborationPayload(request.payload);
+        const { id: credentialId } = request.auth.credentials;
+        const { playlistId, userId } = request.payload;
+    
+        await this._playlistService.verifyPlaylistOwner(playlistId, credentialId);
+        await this._usersService.getUserById(userId);
+        const collaborationId = await this._collaborationService.addCollaboration(
+          playlistId,
+          userId,
+        );
+        const response = h.response({
 
-    await this._playlistService.verifyPlaylistOwner(playlistId, credentialId);
-    await this._usersService.getUserById(userId);
-    const collaborationId = await this._collaborationService.addCollaboration(
-      playlistId,
-      userId,
-    );
+          status: 'success',
+          message: 'Kolaborasi berhasil ditambahkan',
+          data: {
+            collaborationId,
+          },
+              
+        });
+      
+          response.code(201);
+          return response;
 
-    return h
-      .response({
-        status: 'success',
-        message: 'Kolaborasi berhasil ditambahkan',
-        data: {
-          collaborationId,
-        },
-      })
-      .code(201);
+      }  catch (error) {
+        if (error instanceof ClientError) {
+    
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+    
+          response.code(error.statusCode);
+    
+          return response;
+        }
+     
+        // Server ERROR!
+        const response = h.response({
+          status: 'error',
+          message: 'Maaf, terjadi kegagalan pada server kami.',
+        });
+    
+        response.code(500);
+        console.error(error);
+        return response;
+      }
   }
 
-  async deleteCollaborationHandler(request) {
-    this._validator.validateCollaborationPayload(request.payload);
-    const { id: credentialId } = request.auth.credentials;
-    const { playlistId, userId } = request.payload;
+  async deleteCollaborationHandler(request, h) {
+    try {
+      this._validator.validateCollaborationPayload(request.payload);
+      const { id: credentialId } = request.auth.credentials;
+      const { playlistId, userId } = request.payload;
+  
+      await this._playlistService.verifyPlaylistOwner(playlistId, credentialId);
+      await this._collaborationService.deleteCollaboration(playlistId, userId);
+  
+      return {
+        status: 'success',
+        message: 'Kolaborasi berhasil dihapus',
+      };
 
-    await this._playlistService.verifyPlaylistOwner(playlistId, credentialId);
-    await this._collaborationService.deleteCollaboration(playlistId, userId);
-
-    return {
-      status: 'success',
-      message: 'Kolaborasi berhasil dihapus',
-    };
+    }  catch (error) {
+      if (error instanceof ClientError) {
+  
+      const response = h.response({
+        status: 'fail',
+        message: error.message,
+      });
+  
+        response.code(error.statusCode);
+  
+        return response;
+      }
+   
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+  
+      response.code(500);
+      console.error(error);
+      return response;
+    }
   }
 }
 
