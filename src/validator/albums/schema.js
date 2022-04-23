@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable eol-last */
 const Joi = require('joi');
 
 const AlbumPayloadSchema = Joi.object({

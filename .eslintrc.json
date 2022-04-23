@@ -11,6 +11,19 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "linebreak-style": "off",
+        "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+        "import/no-unresolved": "error",
+        "import/order": [
+          "warn",
+          {
+            "newlines-between": "always",
+            "alphabetize": {
+              "order": "asc",
+              "caseInsensitive": true
+            }
+          }
+        ]
     }
 }

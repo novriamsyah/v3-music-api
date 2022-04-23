@@ -1,32 +1,29 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const Hapi = require("@hapi/hapi");
+const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 
-const albums = require("./api/albums");
-const songs = require("./api/songs");
-const users = require('./api/users');
+const albums = require('./api/albums');
 const authentications = require('./api/authentications');
-const playlist = require('./api/playlist');
 const collaboration = require('./api/collaboration');
-
-const AlbumsService = require("./services/postgres/AlbumsService");
-const SongsService = require("./services/postgres/SongsService");
-const UsersService = require('./services/postgres/UsersService');
+const playlist = require('./api/playlist');
+const songs = require('./api/songs');
+const users = require('./api/users');
+const AlbumsService = require('./services/postgres/AlbumsService');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
-const PlaylistService = require('./services/postgres/PlaylistService');
 const CollaborationService = require('./services/postgres/CollaborationService');
-
-
-const AlbumsValidator = require("./validator/albums");
-const SongsValidator = require("./validator/songs");
-const UsersValidator = require('./validator/users');
+const PlaylistService = require('./services/postgres/PlaylistService');
+const SongsService = require('./services/postgres/SongsService');
+const UsersService = require('./services/postgres/UsersService');
+const TokenManager = require('./tokenize/TokenManager');
+const AlbumsValidator = require('./validator/albums');
 const AuthenticationsValidator = require('./validator/authentications');
-const PlaylistValidator = require('./validator/playlist');
 const CollaborationValidator = require('./validator/collaboration');
+const PlaylistValidator = require('./validator/playlist');
+const SongsValidator = require('./validator/songs');
+const UsersValidator = require('./validator/users');
 
 // authentications Token
-const TokenManager = require('./tokenize/TokenManager');
 
 const init = async () => {
   const albumsService = new AlbumsService();
@@ -43,7 +40,7 @@ const init = async () => {
     host: process.env.HOST,
     routes: {
       cors: {
-        origin: ["*"],
+        origin: ['*'],
       },
     },
   });

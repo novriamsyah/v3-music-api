@@ -1,6 +1,6 @@
 const UsersHandler = require('./handler');
 const routes = require('./routes');
- 
+
 module.exports = {
 
   name: 'users',
@@ -9,5 +9,5 @@ module.exports = {
     const usersHandler = new UsersHandler(service, validator);
     server.route(routes(usersHandler));
   },
-  
+
 };

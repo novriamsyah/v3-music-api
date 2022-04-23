@@ -7,7 +7,6 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapPlaylistDBToModel, mapOptSong } = require('../../utils');
 
 class PlaylistService {
-
   constructor(collaborationService) {
     this._pool = new Pool();
     this._collaborationService = collaborationService;
@@ -45,7 +44,7 @@ class PlaylistService {
 
   async getPlaylistById(id) {
     const query = {
-      text: `SELECT * FROM playlists WHERE id = $1`,
+      text: 'SELECT * FROM playlists WHERE id = $1',
       values: [id],
     };
 
@@ -139,26 +138,24 @@ class PlaylistService {
     }
 
     return result.rows[0].id;
-
   }
 
   async getPlaylistActivity(playlistId) {
-      const query = {
-        text: `SELECT users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time FROM playlist_song_activities
+    const query = {
+      text: `SELECT users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time FROM playlist_song_activities
         LEFT JOIN playlists ON playlist_song_activities.playlist_id = playlists.id
         LEFT JOIN songs ON playlist_song_activities.song_id = songs.id
         LEFT JOIN users ON playlist_song_activities.user_id = users.id
         WHERE playlists.id = $1`,
-        values: [playlistId],
-      };
-      const result = await this._pool.query(query);
+      values: [playlistId],
+    };
+    const result = await this._pool.query(query);
 
-      if (!result.rowCount) {
-        throw new NotFoundError('Playlist tidak ditemukan');
-      }
+    if (!result.rowCount) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
 
-      return result.rows;
-
+    return result.rows;
   }
 
   async verifyPlaylistOwner(id, owner) {
@@ -190,9 +187,6 @@ class PlaylistService {
       }
     }
   }
-
-
- 
 }
 
 module.exports = PlaylistService;

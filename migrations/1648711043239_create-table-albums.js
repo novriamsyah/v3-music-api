@@ -1,27 +1,22 @@
-/* eslint-disable arrow-parens */
-/* eslint-disable indent */
-/* eslint-disable quotes */
-/* eslint-disable camelcase */
-
 exports.shorthands = undefined;
 
-exports.up = pgm => {
-    pgm.createTable("albums", {
-        id: {
-          type: "VARCHAR(50)",
-          primaryKey: true,
-        },
-        name: {
-          type: "TEXT",
-          notNull: true,
-        },
-        year: {
-          type: "INT",
-          notNull: true,
-        },
-    });
+exports.up = (pgm) => {
+  pgm.createTable('albums', {
+    id: {
+      type: 'VARCHAR(50)',
+      primaryKey: true,
+    },
+    name: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    year: {
+      type: 'INT',
+      notNull: true,
+    },
+  });
 };
 
-exports.down = pgm => {
-    pgm.dropTable("albums");
+exports.down = (pgm) => {
+  pgm.dropTable('albums');
 };
