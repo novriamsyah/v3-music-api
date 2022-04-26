@@ -1,14 +1,18 @@
 const ClientError = require('../../exceptions/ClientError');
 
 class AlbumsHandler {
-  constructor(service, validator) {
+  constructor(service, storageService, validator) {
     this._service = service;
+    this._storageService = storageService;
     this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+    this.postUploadAlbumCoverHandler = this.postUploadAlbumCoverHandler.bind(this);
+    this.postAlbumLikesHandler = this.postAlbumLikesHandler.bind(this);
+    this.getAlbumLikesHandler = this.getAlbumLikesHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -119,6 +123,114 @@ class AlbumsHandler {
         status: 'success',
         message: 'Data Album berhasil dihapus',
       };
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async postUploadAlbumCoverHandler(request, h) {
+    try {
+      const { cover } = request.payload;
+      const { id } = request.params;
+      this._validator.validateImageHeaders(cover.hapi.headers);
+
+      const filename = await this._storageService.writeFile(
+        cover,
+        cover.hapi,
+      );
+      await this._albumService.editAlbumCover(id, filename);
+
+      const response = h.response({
+        status: 'success',
+        message: 'Cover album berhasil disimpan',
+        data: {
+          fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
+        },
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async postAlbumLikesHandler(request, h) {
+    try {
+      const { id: credentialId } = request.auth.credentials;
+      const { id } = request.params;
+
+      const message = await this._service.addAlbumLikes(id, credentialId);
+
+      const response = h.response({
+        status: 'success',
+        message,
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getAlbumLikesHandler(request, h) {
+    try {
+      const { id } = request.params;
+
+      const { likes, isCache } = await this._service.getAlbumLikes(id);
+
+      return h
+        .response({
+          status: 'success',
+          data: {
+            likes,
+          },
+        })
+        .header('X-Data-Source', isCache ? 'cache' : 'db');
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({

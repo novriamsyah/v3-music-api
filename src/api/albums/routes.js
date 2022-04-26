@@ -20,6 +20,32 @@ const routes = (handler) => [
     path: '/albums/{id}',
     handler: handler.deleteAlbumByIdHandler,
   },
+  {
+    method: 'POST',
+    path: '/albums/{id}/covers',
+    handler: handler.postUploadAlbumCoverHandler,
+    options: {
+      payload: {
+        allow: 'multipart/form-data',
+        multipart: true,
+        maxBytes: 512000,
+        output: 'stream',
+      },
+    },
+  },
+  {
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: handler.postAlbumLikesHandler,
+    options: {
+      auth: 'openmusicsapp_jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/{id}/likes',
+    handler: handler.getAlbumLikesHandler,
+  },
 
 ];
 
