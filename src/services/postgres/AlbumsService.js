@@ -75,10 +75,10 @@ class AlbumsService {
   }
 
   async editAlbumCover(id, cover) {
-    const updatedAt = new Date().toISOString();
+    // const updatedAt = new Date().toISOString();
     const query = {
-      text: 'UPDATE albums SET cover = $1, updated_at = $2 WHERE id = $3 RETURNING id',
-      values: [cover, updatedAt, id],
+      text: 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
+      values: [cover, id],
     };
 
     const result = await this._pool.query(query);
