@@ -1,3 +1,5 @@
+const path = require('path');
+
 const routes = (handler) => [
 
   {
@@ -30,6 +32,15 @@ const routes = (handler) => [
         multipart: true,
         maxBytes: 512000,
         output: 'stream',
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/upload/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, 'file'),
       },
     },
   },
