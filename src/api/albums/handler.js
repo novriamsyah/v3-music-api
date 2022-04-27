@@ -153,7 +153,7 @@ class AlbumsHandler {
         cover,
         cover.hapi,
       );
-      await this._albumService.editAlbumCover(id, filename);
+      await this._service.editAlbumCover(id, filename);
 
       const response = h.response({
         status: 'success',
