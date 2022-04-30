@@ -75,7 +75,6 @@ class AlbumsService {
   }
 
   async editAlbumCover(id, cover) {
-    // const updatedAt = new Date().toISOString();
     const query = {
       text: 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
       values: [cover, id],
