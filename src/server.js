@@ -35,7 +35,7 @@ const UsersValidator = require('./validator/users');
 // authentications Token
 
 const init = async () => {
-  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const storageService = new StorageService(path.resolve(__dirname, 'api/albums/file/images'));
   const cacheService = new CacheService();
   const albumsService = new AlbumsService(cacheService);
   const songsService = new SongsService();

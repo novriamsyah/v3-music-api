@@ -153,13 +153,16 @@ class AlbumsHandler {
         cover,
         cover.hapi,
       );
-      await this._service.editAlbumCover(id, filename);
+
+      const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
+
+      await this._service.editAlbumCover(id, fileLocation);
 
       const response = h.response({
         status: 'success',
         message: 'Cover album berhasil disimpan',
         data: {
-          fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
+          fileLocation,
         },
       });
       response.code(201);
